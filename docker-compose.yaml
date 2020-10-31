@@ -1,6 +1,26 @@
 version: '3'
 services:
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass temp_pass_123
+    ports: 
+      - "6379:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - internal_network
+  
   frontend:
     build: ./frontend
-    ports: 
-      - "8080:8080"
+  #  ports: 
+  #    - "8080:8080"
+  #  networks: 
+  #    - internal_network
+  #  depends_on: 
+  #    - redis
+networks:
+  internal_network:
+    driver: bridge
