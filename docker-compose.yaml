@@ -6,21 +6,31 @@ services:
     ports: 
       - "6379:6379"
     volumes:
-      - $PWD/redis-data:/var/lib/redis
-      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+      - ~/redis-data:/var/lib/redis
+      - ~/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
       - REDIS_REPLICATION_MODE=master
     networks:
       - internal_network
+    restart: unless-stopped
   
+  backend:
+    build: ./backend
+    networks: 
+      - internal_network
+    depends_on: 
+      - redis
+    restart: unless-stopped
+
   frontend:
     build: ./frontend
-  #  ports: 
-  #    - "8080:8080"
-  #  networks: 
-  #    - internal_network
-  #  depends_on: 
-  #    - redis
+    ports: 
+      - "8080:8080"
+    networks: 
+      - internal_network
+    depends_on: 
+      - backend
+    restart: unless-stopped
 networks:
   internal_network:
     driver: bridge
