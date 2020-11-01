@@ -59,7 +59,20 @@ func (server *Server) FoodsEndpoint(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "{\"Error\":\"Could not find any foods\"}")
 	} else {
 		fmt.Println("Got something for redis")
-		io.WriteString(w, results[0])
+		io.WriteString(w, func(foods []string) string {
+			returnString := "{\"foods\": [ "
+			for _, food := range foods {
+				//food = strings.ReplaceAll(strings.ReplaceAll(food, "{", ""), "}", "")
+				returnString += food + ", "
+			}
+			if returnString[len(returnString)-2] == ',' {
+				returnString = returnString[:len(returnString)-2]
+			}
+			returnString += " ]}"
+			fmt.Println(returnString)
+			return returnString
+
+		}(results))
 	}
 	//foods := server.fakeDataBaseFood()
 	//json.NewEncoder(w).Encode(foods)
