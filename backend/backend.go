@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/salmin36/favorite_foods/backend/server"
 )
 
 func main() {
@@ -14,6 +16,9 @@ func main() {
 	fmt.Println("Hello World")
 
 	go connectToRedis()
+
+	server := server.NewServer()
+	go server.StartServer()
 
 	for {
 
@@ -24,6 +29,11 @@ func main() {
 var ctx = context.Background()
 
 func connectToRedis() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("panic occurred:", err)
+		}
+	}()
 	db := redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "temp_pass_123", // no password set

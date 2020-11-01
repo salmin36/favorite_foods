@@ -7,4 +7,5 @@ RUN CGO_ENABLED=0 go build -o /out/backend .
 RUN ls -la /out/backend
 FROM scratch AS backend
 COPY --from=build /out/backend /
+EXPOSE 8081
 ENTRYPOINT ["/backend"]
