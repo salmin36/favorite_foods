@@ -15,9 +15,9 @@ func main() {
 	wg.Add(1)
 	fmt.Println("Hello World")
 
-	go connectToRedis()
+	rdb := connectToRedis()
 
-	server := server.NewServer()
+	server := server.NewServer(rdb)
 	go server.StartServer()
 
 	for {
@@ -28,7 +28,7 @@ func main() {
 
 var ctx = context.Background()
 
-func connectToRedis() {
+func connectToRedis() *redis.Client {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println("panic occurred:", err)
@@ -40,23 +40,26 @@ func connectToRedis() {
 		DB:       0,               // use default DB
 	})
 
-	err := db.Set(ctx, "key", "value", 0).Err()
-	if err != nil {
-		panic(err)
-	}
+	return db
 
-	val, err := db.Get(ctx, "key").Result()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("key", val)
+	/*
+		err := db.Set(ctx, "key", "value", 0).Err()
+		if err != nil {
+			panic(err)
+		}
 
-	val2, err := db.Get(ctx, "key2").Result()
-	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
-	} else if err != nil {
-		panic(err)
-	} else {
-		fmt.Println("key2", val2)
-	}
+		val, err := db.Get(ctx, "key").Result()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("key", val)
+
+		val2, err := db.Get(ctx, "key2").Result()
+		if err == redis.Nil {
+			fmt.Println("key2 does not exist")
+		} else if err != nil {
+			panic(err)
+		} else {
+			fmt.Println("key2", val2)
+		}*/
 }
