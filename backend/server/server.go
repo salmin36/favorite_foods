@@ -31,18 +31,8 @@ func NewServer() *Server {
 
 func (server *Server) StartServer() {
 	router := mux.NewRouter().StrictSlash(true)
-	router.Use(server.commondMiddleware)
 	router.HandleFunc("/foods", server.FoodsEndpoint).Methods("GET")
 	http.ListenAndServe(":8081", router)
-}
-
-func (server *Server) commondMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		w.Header().Add("Access-Control-Allow-Origin", "*")
-		w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
-		next.ServeHTTP(w, r)
-	})
 }
 
 func (server *Server) FoodsEndpoint(w http.ResponseWriter, r *http.Request) {
